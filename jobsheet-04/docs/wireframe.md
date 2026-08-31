@@ -1,34 +1,45 @@
 # 📚 SIMPUS-Mini - Userflow & Wireframe
 
-Dokumen ini berisi rancangan **Userflow** (Alur Pengguna) dan **Wireframe** dasar (Tata Letak) untuk proyek Sistem Perpustakaan Mini (SIMPUS-Mini).
+Dokumen ini berisi rancangan **Userflow** (Alur Pengguna) dan **Wireframe** (Tata Letak) untuk proyek Sistem Perpustakaan Mini (SIMPUS-Mini), meliputi fitur yang sudah berjalan maupun fitur yang akan datang (Login, Dashboard Petugas, Peminjaman, Pengembalian, Riwayat).
 
 ---
 
-## 🔄 Userflow
+## 🔄 Userflow (Keseluruhan & Fitur Mendatang)
 
-Userflow menggambarkan navigasi atau alur pengguna dari halaman ke halaman yang tersedia di dalam aplikasi **SIMPUS-Mini**.
+Alur di bawah ini menggambarkan navigasi dari sistem secara menyeluruh, diawali dengan portal publik dan portal khusus petugas (Admin).
 
 ```mermaid
 graph TD
-    A[🏠 Beranda / Home] --> B[📖 Daftar Buku]
-    A --> C[➕ Tambah Buku]
+    %% Portal Publik
+    A[🏠 Beranda / Publik] --> B[📖 Daftar Buku]
     A --> D[👥 Daftar Anggota]
     
-    B --> B1[Lihat Detail Buku]
-    B --> B2[Edit / Hapus Buku]
+    %% Portal Petugas (Fitur Mendatang)
+    A -->|Akses Admin| P1[� Login Petugas]
+    P1 -->|Autentikasi Valid| P2[📊 Dashboard Petugas]
     
-    C --> C1[Isi Form Tambah Buku]
-    C1 -->|Simpan| B
+    P2 --> C[➕ Kelola Data Buku]
+    P2 --> E[➕ Kelola Pengguna / Anggota]
+    P2 --> P3[📤 Peminjaman Buku]
+    P2 --> P4[📥 Pengembalian Buku]
+    P2 --> P5[📜 Riwayat Transaksi]
     
-    D --> D1[Lihat Detail Anggota]
-    D --> D2[Edit / Hapus Anggota]
+    C --> C1[Isi Form / Edit Data]
+    C1 -->|Simpan| C
+    
+    P3 --> P3a[Pilih Anggota & Buku]
+    P3a -->|Proses Pinjam| P5
+    
+    P4 --> P4a[Input ID Pinjam / Scan]
+    P4a -->|Proses Kembali| P5
 ```
 
-*Keterangan:*
-- **Beranda**: Menampilkan ringkasan data (Total Buku, Total Anggota, Sedang Dipinjam).
-- **Daftar Buku**: Menampilkan daftar koleksi buku yang tersedia.
-- **Tambah Buku**: Form untuk menginputkan data buku baru ke dalam sistem.
-- **Daftar Anggota**: Menampilkan daftar pengunjung/anggota perpustakaan.
+*Keterangan Fitur Mendatang:*
+- **Login Petugas**: Gerbang bagi pustakawan untuk masuk ke sistem manajemen internal.
+- **Dashboard Petugas**: Halaman pusat kendali petugas setelah berhasil login.
+- **Peminjaman Buku**: Proses pencatatan saat anggota meminjam buku.
+- **Pengembalian Buku**: Proses pencatatan anggota saat mengembalikan buku (termasuk denda jika ada).
+- **Riwayat Transaksi**: Log semua aktivitas masuk-keluar buku.
 
 ---
 
@@ -36,101 +47,141 @@ graph TD
 
 Wireframe merupakan kerangka kasar tampilan aplikasi untuk versi **Mobile** maupun **Desktop**.
 
-### 1. Halaman Beranda (Home)
-Halaman utama saat pengguna mengakses aplikasi perpustakaan.
+### 1. Halaman Login (Fitur Mendatang)
+Halaman autentikasi untuk petugas perpustakaan.
 
 ```text
 +-------------------------------------------------------------+
-|  [SIMPUS-Mini]                                     [≡ Menu] |
+|  [SIMPUS-Mini]                                              |
++-------------------------------------------------------------+
+|                                                             |
+|       +---------------------------------------------+       |
+|       |  🔑 Login Petugas                           |       |
+|       |                                             |       |
+|       |  [ Username / Email               ]         |       |
+|       |  ----------------------------------         |       |
+|       |  [ Password                       ]         |       |
+|       |  ----------------------------------         |       |
+|       |                                             |       |
+|       |       [==== MASUK KE SISTEM ====]           |       |
+|       +---------------------------------------------+       |
+|                                                             |
++-------------------------------------------------------------+
+```
+
+### 2. Dashboard Petugas (Fitur Mendatang)
+Panel utama admin setelah login berhasil.
+
+```text
++-------------------------------------------------------------+
+|  [SIMPUS-Mini - Admin]                   [👤 Hai, Admin] ▼  |
++-------------------------------------------------------------+
+|                                                             |
+|  [Menu Navigator]                                           |
+|  +----------------+ +----------------+ +----------------+   |
+|  | 📤 Peminjaman  | | 📥 Pengembalian| | 📜 Riwayat     |   |
+|  +----------------+ +----------------+ +----------------+   |
+|  +----------------+ +----------------+                      |
+|  | 📖 Kelola Buku | | 👥 Kelola Agn. |                      |
+|  +----------------+ +----------------+                      |
+|                                                             |
+|  [Pemberitahuan Terbaru]                                    |
+|  - Anggota A terlambat mengembalikan buku "Web Dev".        |
+|  - Stok Buku "Laskar Pelangi" sisa 1.                       |
+|                                                             |
++-------------------------------------------------------------+
+```
+
+### 3. Halaman Peminjaman (Fitur Mendatang)
+Formulir transaksi saat buku dipinjam.
+
+```text
++-------------------------------------------------------------+
+|  [SIMPUS-Mini - Admin]                   [👤 Hai, Admin] ▼  |
++-------------------------------------------------------------+
+|  � Transaksi Peminjaman Baru                               |
+|                                                             |
+|  1. Data Peminjam                                           |
+|  [ Pilih Anggota (Cari Nama / ID)   ▼ ]                     |
+|                                                             |
+|  2. Data Buku                                               |
+|  [ Pilih Buku yang Tersedia         ▼ ] [+ Tambah Buku ]    |
+|  - Buku: Pemrograman Web (1 Buah)                           |
+|                                                             |
+|  3. Keterangan Waktu                                        |
+|  [ Tanggal Pinjam: 31/08/2026       ]                       |
+|  [ Batas Kembali:  07/09/2026       ]                       |
+|                                                             |
+|  [ Batal ]  [ Proses Peminjaman ]                           |
+|                                                             |
++-------------------------------------------------------------+
+```
+
+### 4. Halaman Pengembalian (Fitur Mendatang)
+Halaman untuk mengonfirmasi pengembalian dan meninjau masalah/denda.
+
+```text
++-------------------------------------------------------------+
+|  [SIMPUS-Mini - Admin]                   [👤 Hai, Admin] ▼  |
++-------------------------------------------------------------+
+|  📥 Transaksi Pengembalian                                  |
+|                                                             |
+|  [ Masukkan ID Peminjaman / Scan Barcode ] [ Cari ]         |
+|                                                             |
+|  *Detail Ditemukan:*                                        |
+|  - Peminjam   : Bintang (AGT-01)                            |
+|  - Buku       : Dasar-Dasar Algoritma                       |
+|  - Tgl Pinjam : 20/08/2026                                  |
+|  - Status     : TERLAMBAT (4 Hari)                          |
+|  - Denda      : Rp 4.000                                    |
+|                                                             |
+|  [ Tandai Buku Rusak/Hilang ? ]                             |
+|                                                             |
+|  [ Batalkan ]  [ Konfirmasi Pengembalian ]                  |
+|                                                             |
++-------------------------------------------------------------+
+```
+
+### 5. Halaman Riwayat Transaksi (Fitur Mendatang)
+Tabel untuk mencetak laporan atau memantau transaksi.
+
+```text
++-------------------------------------------------------------+
+|  [SIMPUS-Mini - Admin]                   [👤 Hai, Admin] ▼  |
++-------------------------------------------------------------+
+|  � Riwayat Transaksi                   [Cetak Laporan 🖨️]  |
+|                                                             |
+|  +----+---------+------------------+------------+--------+  |
+|  | ID | Tgl     | Peminjam / Buku  | Batas      | Status |  |
+|  +----+---------+------------------+------------+--------+  |
+|  | 01 | 31 Aug  | Bintang / CSS    | 07 Sep     | AKTIF  |  |
+|  | 02 | 20 Aug  | John / HTML      | 27 Aug     | SELESAI|  |
+|  +----+---------+------------------+------------+--------+  |
+|  [< Prev] Halaman 1 dari 5 [Next >]                         |
+|                                                             |
++-------------------------------------------------------------+
+```
+
+### 6. Halaman Publik (Beranda & Daftar Eksisting)
+Tampilan akses pengunjung umum (guest), tanpa menu pengelolaan.
+
+```text
++-------------------------------------------------------------+
+|  [SIMPUS-Mini]                    [Login Petugas] [≡ Menu]  |
 +-------------------------------------------------------------+
 |                                                             |
 |  Selamat Datang di Sistem Perpustakaan Mini                 |
-|  Aplikasi sederhana untuk mengelola data buku dan anggota.  |
+|  Aplikasi sederhana untuk mengelola data buku.              |
 |                                                             |
-|  [Ringkasan]                                                |
+|  [Ringkasan Publik]                                         |
 |  +--------------------+  +--------------------+             |
 |  | 📚 Total Buku      |  | 👥 Total Anggota   |             |
 |  |        12          |  |         8          |             |
 |  +--------------------+  +--------------------+             |
-|  +--------------------+                                     |
-|  | 🔄 Sedang Dipinjam |                                     |
-|  |        3           |                                     |
-|  +--------------------+                                     |
 |                                                             |
-+-------------------------------------------------------------+
-|  © 2026 SIMPUS-Mini — Jobsheet 3                            |
-+-------------------------------------------------------------+
-```
-
-### 2. Halaman Daftar Buku (List Buku)
-Menampilkan tabel daftar buku yang ada di dalam koleksi.
-
-```text
-+-------------------------------------------------------------+
-|  [SIMPUS-Mini]                                     [≡ Menu] |
-+-------------------------------------------------------------+
-|  📖 Daftar Buku                                             |
-|                                                             |
-|  [+ Tambah Buku Baru]                                       |
-|                                                             |
-|  +----+------------------------+-------------+-----------+  |
-|  | No | Judul Buku             | Pengarang   | Aksi      |  |
-|  +----+------------------------+-------------+-----------+  |
-|  | 1  | Laskar Pelangi         | Andrea H.   | Edit|Del  |  |
-|  | 2  | Pemrograman Web        | Budi S.     | Edit|Del  |  |
-|  +----+------------------------+-------------+-----------+  |
-|                                                             |
-+-------------------------------------------------------------+
-|  © 2026 SIMPUS-Mini — Jobsheet 3                            |
-+-------------------------------------------------------------+
-```
-
-### 3. Halaman Tambah Buku (Form Tambah Buku)
-Form pengisian data buku baru.
-
-```text
-+-------------------------------------------------------------+
-|  [SIMPUS-Mini]                                     [≡ Menu] |
-+-------------------------------------------------------------+
-|  ➕ Tambah Data Buku                                        |
-|                                                             |
-|  [ Judul Buku                       ]                       |
-|  ------------------------------------                       |
-|  [ Nama Pengarang                   ]                       |
-|  ------------------------------------                       |
-|  [ Tahun Terbit                     ]                       |
-|  ------------------------------------                       |
-|  [ Kategori / Genre                 ]                       |
-|  ------------------------------------                       |
-|                                                             |
-|  [ Batal ]  [ Simpan Data ]                                 |
-|                                                             |
-+-------------------------------------------------------------+
-|  © 2026 SIMPUS-Mini — Jobsheet 3                            |
-+-------------------------------------------------------------+
-```
-
-### 4. Halaman Daftar Anggota
-Menampilkan tabel anggota perpustakaan yang terdaftar.
-
-```text
-+-------------------------------------------------------------+
-|  [SIMPUS-Mini]                                     [≡ Menu] |
-+-------------------------------------------------------------+
-|  👥 Daftar Anggota                                          |
-|                                                             |
-|  +----+------------------------+-------------+-----------+  |
-|  | No | Nama / ID Anggota      | Status      | Aksi      |  |
-|  +----+------------------------+-------------+-----------+  |
-|  | 1  | AGT-01 - Bintang       | Aktif       | Edit|Del  |  |
-|  | 2  | AGT-02 - John Doe      | Aktif       | Edit|Del  |  |
-|  +----+------------------------+-------------+-----------+  |
-|                                                             |
-+-------------------------------------------------------------+
-|  © 2026 SIMPUS-Mini — Jobsheet 3                            |
 +-------------------------------------------------------------+
 ```
 
 ---
 
-> _Catatan: Desain dioptimalkan agar responsif dengan menggunakan Flexbox/Grid sesuai _best practice_ CSS, terutama dengan pendekatan Mobile-First._
+> _Catatan: Desain fitur mendatang ini dirancang agar administrasi perpustakaan berpusat dalam satu Dashboard Petugas dengan visibilitas data transaksi (Peminjaman & Pengembalian) yang detail dan jelas._
