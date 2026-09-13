@@ -18,32 +18,47 @@ function initHapusConfirm() {
       const yakin = confirm('Yakin ingin menghapus "' + nama + '"?');
       if (yakin && row) {
         row.remove();
+        updateCounter();
       }
     });
   });
+}
+
+function updateCounter() {
+  const table = document.querySelector(".table-responsive table");
+  const count = document.querySelector(".search-count");
+  if (!table || !count) return;
+
+  const rows = table.querySelectorAll("tbody tr");
+  const totalCount = rows.length;
+  let visibleCount = 0;
+  rows.forEach(function (row) {
+    if (row.style.display !== "none") visibleCount++;
+  });
+  count.textContent = `Menampilkan ${visibleCount} dari ${totalCount} buku`;
 }
 
 // ===== Filter/pencarian tabel real-time =====
 function initTableFilter() {
   const input = document.getElementById("search-input");
   const table = document.querySelector(".table-responsive table");
-  const count = document.querySelector(".search-count");
   if (!input || !table) return;
 
   input.addEventListener("keyup", function () {
     const keyword = input.value.toLowerCase();
     const rows = table.querySelectorAll("tbody tr");
-    let visibleCount = 0;
     rows.forEach(function (row) {
-      const teks = row.textContent.toLowerCase();
-      if (teks.includes(keyword)) {
-        row.style.display = "";
-        visibleCount++;
-      } else {
-        row.style.display = "none";
+      const tdJudul = row.querySelector("td");
+      if (tdJudul) {
+        const teks = tdJudul.textContent.toLowerCase();
+        if (teks.includes(keyword)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
       }
     });
-    count.textContent = `Found ${visibleCount} books`;
+    updateCounter();
   });
 }
 
@@ -64,32 +79,32 @@ function hapusError(input) {
 }
 
 function initValidasiForm() {
-  const form = document.getElementById("form-tambah");
+  const form = document.querySelector("form");
   if (!form) return;
 
   form.addEventListener("submit", function (e) {
     let valid = true;
 
-    const judul = form.querySelector("[name='judul'], [name='nama']");
-    if (judul && judul.value.trim() === "") {
-      tampilkanError(judul, "Field ini wajib diisi.");
-      valid = false;
-    } else if (judul) {
-      hapusError(judul);
-    }
-
-    const pengarang = form.querySelector("[name='pengarang']");
-    if (pengarang && pengarang.value.trim() === "") {
-      tampilkanError(pengarang, "Pengarang wajib diisi.");
-      valid = false;
-    } else if (pengarang) {
-      hapusError(pengarang);
-    }
+    const requiredFields = ["judul", "nama", "pengarang", "stok"];
+    requiredFields.forEach(name => {
+      const el = form.querySelector(`[name='${name}']`);
+      if (el) {
+        if (el.value.trim() === "") {
+          tampilkanError(el, "Field ini wajib diisi.");
+          valid = false;
+        } else {
+          hapusError(el);
+        }
+      }
+    });
 
     const tahun = form.querySelector("[name='tahun']");
     if (tahun) {
       const nilai = parseInt(tahun.value, 10);
-      if (isNaN(nilai) || nilai < 1900 || nilai > 2026) {
+      if (tahun.value.trim() === "") {
+        tampilkanError(tahun, "Field ini wajib diisi.");
+        valid = false;
+      } else if (isNaN(nilai) || nilai < 1900 || nilai > 2026) {
         tampilkanError(tahun, "Tahun harus di antara 1900-2026.");
         valid = false;
       } else {
@@ -98,14 +113,24 @@ function initValidasiForm() {
     }
 
     const stok = form.querySelector("[name='stok']");
-    if (stok) {
+    if (stok && stok.value.trim() !== "") {
       const nilai = parseInt(stok.value, 10);
       if (isNaN(nilai) || nilai < 0) {
         tampilkanError(stok, "Stok tidak boleh negatif.");
         valid = false;
-      } else {
-        hapusError(stok);
       }
+    }
+
+    const isbn = form.querySelector("[name='isbn']");
+    if (isbn && isbn.value.trim() !== "") {
+      if (!/^[0-9\-]+$/.test(isbn.value.trim())) {
+        tampilkanError(isbn, "ISBN hanya boleh berisi angka dan tanda hubung.");
+        valid = false;
+      } else {
+        hapusError(isbn);
+      }
+    } else if (isbn) {
+      hapusError(isbn);
     }
 
     if (!valid) {
@@ -119,4 +144,5 @@ document.addEventListener("DOMContentLoaded", function () {
   initHapusConfirm();
   initTableFilter();
   initValidasiForm();
+  updateCounter();
 });

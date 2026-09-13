@@ -46,10 +46,12 @@ header h1 {
 }
 
 header nav {
-  display: none;
+  max-height: 0;
+  overflow: hidden;
   width: 100%;
   order: 3;
-  margin-top: 1rem;
+  margin-top: 0;
+  transition: max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
 }
 
 header nav ul {
@@ -77,8 +79,10 @@ header nav a {
 }
 
 /* Checkbox hack untuk membuka menu */
-.nav-toggle:checked ~ nav {
-  display: block;
+.nav-toggle:checked ~ nav,
+header nav.nav-open {
+  max-height: 400px;
+  margin-top: 1rem;
 }
 
 /* =========================================================
@@ -299,6 +303,8 @@ footer {
 
   header nav {
     display: block;
+    max-height: none;
+    overflow: visible;
     width: auto;
     order: initial;
     margin-top: 0;
